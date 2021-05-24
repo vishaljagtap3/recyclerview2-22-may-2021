@@ -2,6 +2,7 @@ package in.bitcode.recyclerview2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,16 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
     private Context mContext;
     private ArrayList<City> mListCities;
 
+    public interface OnCityClickListener {
+        public void onCityImageClick(int position, ImageView imageView);
+        public void onCityNameClick(int position, TextView textView);
+    }
+    private OnCityClickListener mOnCityClickListener;
+
+    public void setOnCityClickListener(OnCityClickListener onCityClickListener) {
+        this.mOnCityClickListener = onCityClickListener;
+    }
+
     public CitiesAdapter(Context context, ArrayList<City> listCities) {
         mContext = context;
         mListCities = listCities;
@@ -45,6 +56,25 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
             mImgCity.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if( mOnCityClickListener != null) {
+                        mOnCityClickListener.onCityImageClick(getAdapterPosition(), mImgCity);
+                    }
+                }
+            });
+
+            mTxtCityName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if( mOnCityClickListener != null) {
+                        mOnCityClickListener.onCityNameClick(getAdapterPosition(), mTxtCityName);
+                    }
+                }
+            });
+
+            /*
+            mImgCity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     Snackbar.make(
                             view,
                             "Nice Image: " + mListCities.get(getAdapterPosition()).getName(),
@@ -61,6 +91,7 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
                     mContext.startActivity(intent);
                 }
             });
+             */
         }
     }
 
@@ -92,5 +123,17 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
         holder.mImgCity.setImageResource(city.getImageId());
         holder.mTxtCityName.setText(city.getName());
         holder.mTxtCityPopulation.setText(city.getPopulation() + "");
+
+        if( city.isSelected()) {
+            holder.mTxtCityName.setBackgroundColor(Color.GRAY);
+            holder.mImgCity.setBackgroundColor(Color.RED);
+            holder.mImgCity.setPadding(20, 20, 20, 20);
+        }
+        else {
+            holder.mTxtCityName.setBackgroundColor(Color.WHITE);
+            holder.mImgCity.setBackgroundColor(Color.WHITE);
+            holder.mImgCity.setPadding(0, 0, 0, 0);
+        }
+
     }
 }
